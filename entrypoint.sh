@@ -26,6 +26,12 @@ configured=false
 case "$log_interval" in
   ''|*[!0-9]*|0) log_interval=5 ;;
 esac
+case "$max_retries" in
+  ''|*[!0-9]*|0) max_retries=30 ;;
+esac
+case "$retry_interval" in
+  ''|*[!0-9]*|0) retry_interval=1 ;;
+esac
 
 while [ "$attempt" -le "$max_retries" ]; do
   if /usr/local/x-ui/x-ui setting -username "$username" -password "$password" >/dev/null 2>&1; then
