@@ -4,12 +4,18 @@ set -e
 echo "⏳ 等待面板数据库初始化并注入账号配置..."
 
 # 通过环境变量设置账号密码（默认 admin / admin）
-username="${XUI_USERNAME:-admin}"
-password="${XUI_PASSWORD:-admin}"
-
-if [ -z "${XUI_USERNAME:-}" ] || [ -z "${XUI_PASSWORD:-}" ]; then
+if [ -n "${XUI_USERNAME:-}" ] && [ -z "${XUI_PASSWORD:-}" ]; then
+  echo "❌ 仅设置了 XUI_USERNAME，必须同时设置 XUI_PASSWORD"
+  exit 1
+elif [ -z "${XUI_USERNAME:-}" ] && [ -n "${XUI_PASSWORD:-}" ]; then
+  echo "❌ 仅设置了 XUI_PASSWORD，必须同时设置 XUI_USERNAME"
+  exit 1
+elif [ -z "${XUI_USERNAME:-}" ] && [ -z "${XUI_PASSWORD:-}" ]; then
   echo "⚠️ 未提供 XUI_USERNAME 或 XUI_PASSWORD，使用默认凭据"
 fi
+
+username="${XUI_USERNAME:-admin}"
+password="${XUI_PASSWORD:-admin}"
 
 max_retries="${XUI_INIT_RETRIES:-30}"
 retry_interval="${XUI_INIT_INTERVAL:-1}"
