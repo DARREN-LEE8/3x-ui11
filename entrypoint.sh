@@ -27,6 +27,10 @@ while [ "$attempt" -le "$max_retries" ]; do
     break
   fi
 
+  if [ $((attempt % 5)) -eq 0 ]; then
+    echo "⏳ 正在等待面板数据库就绪... (${attempt}/${max_retries})"
+  fi
+
   sleep "$retry_interval"
   attempt=$((attempt + 1))
 done
