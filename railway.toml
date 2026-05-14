@@ -1,0 +1,14 @@
+# Railway deployment configuration for 3x-ui
+# https://docs.railway.app/reference/config-as-code
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "./Dockerfile"
+
+[deploy]
+# Railway will inject $PORT; our entrypoint reads it and configures 3x-ui.
+# healthcheckPath must respond 200 – the 3x-ui login page does.
+healthcheckPath = "/"
+healthcheckTimeout = 120
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
