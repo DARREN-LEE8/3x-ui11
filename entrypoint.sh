@@ -19,8 +19,13 @@ password="${XUI_PASSWORD:-admin}"
 
 max_retries="${XUI_INIT_RETRIES:-30}"
 retry_interval="${XUI_INIT_INTERVAL:-1}"
+log_interval="${XUI_LOG_INTERVAL:-5}"
 attempt=1
 configured=false
+
+case "$log_interval" in
+  ''|*[!0-9]*|0) log_interval=5 ;;
+esac
 
 while [ "$attempt" -le "$max_retries" ]; do
   if /usr/local/x-ui/x-ui setting -username "$username" -password "$password" >/dev/null 2>&1; then
@@ -29,7 +34,7 @@ while [ "$attempt" -le "$max_retries" ]; do
     break
   fi
 
-  if [ "$attempt" -eq 1 ] || [ $((attempt % 5)) -eq 0 ]; then
+  if [ "$attempt" -eq 1 ] || [ $((attempt % log_interval)) -eq 0 ]; then
     echo "⏳ 正在等待面板数据库就绪... (${attempt}/${max_retries})"
   fi
 
