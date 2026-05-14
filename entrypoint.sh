@@ -20,14 +20,16 @@ password="${XUI_PASSWORD:-admin}"
 max_retries="${XUI_INIT_RETRIES:-30}"
 retry_interval="${XUI_INIT_INTERVAL:-1}"
 attempt=1
+configured=false
 
 while [ "$attempt" -le "$max_retries" ]; do
   if /usr/local/x-ui/x-ui setting -username "$username" -password "$password" >/dev/null 2>&1; then
     echo "✅ 账号密码已注入"
+    configured=true
     break
   fi
 
-  if [ $((attempt % 5)) -eq 0 ]; then
+  if [ "$attempt" -eq 1 ] || [ $((attempt % 5)) -eq 0 ]; then
     echo "⏳ 正在等待面板数据库就绪... (${attempt}/${max_retries})"
   fi
 
@@ -35,7 +37,7 @@ while [ "$attempt" -le "$max_retries" ]; do
   attempt=$((attempt + 1))
 done
 
-if [ "$attempt" -gt "$max_retries" ]; then
+if [ "$configured" != "true" ]; then
   echo "❌ 面板初始化等待超时，账号密码注入失败，终止启动"
   exit 1
 fi
