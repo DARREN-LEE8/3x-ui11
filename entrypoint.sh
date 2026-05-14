@@ -3,14 +3,18 @@ set -e
 
 wait_seconds="${XUI_INIT_WAIT:-5}"
 case "$wait_seconds" in
-  ''|*[!0-9]*|0) wait_seconds=5 ;;
+  ''|*[!0-9]*) wait_seconds=5 ;;
 esac
 
 echo "⏳ 等待面板数据库初始化..."
 sleep "$wait_seconds"
 
 # 通过环境变量设置账号密码（默认 admin / admin）
-if [ -z "${XUI_USERNAME:-}" ] && [ -z "${XUI_PASSWORD:-}" ]; then
+if [ -n "${XUI_USERNAME:-}" ] && [ -z "${XUI_PASSWORD:-}" ]; then
+  echo "⚠️ 仅设置了 XUI_USERNAME，XUI_PASSWORD 将使用默认值 admin"
+elif [ -z "${XUI_USERNAME:-}" ] && [ -n "${XUI_PASSWORD:-}" ]; then
+  echo "⚠️ 仅设置了 XUI_PASSWORD，XUI_USERNAME 将使用默认值 admin"
+elif [ -z "${XUI_USERNAME:-}" ] && [ -z "${XUI_PASSWORD:-}" ]; then
   echo "⚠️ 未设置 XUI_USERNAME/XUI_PASSWORD，将使用默认 admin/admin"
 fi
 
